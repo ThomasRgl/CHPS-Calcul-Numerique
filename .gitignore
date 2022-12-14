@@ -1,0 +1,4 @@
+bin/*
+README.mdtext
+compile_flags.txt
+types.h
