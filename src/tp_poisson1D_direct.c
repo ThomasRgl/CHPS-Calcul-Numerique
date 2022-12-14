@@ -5,6 +5,7 @@
 /******************************************/
 #include "atlas_headers.h"
 #include "lib_poisson1D.h"
+#include <lapack.h>
 
 int main(int argc, char *argv[])
 /* ** argc: Nombre d'arguments */
@@ -36,6 +37,7 @@ int main(int argc, char *argv[])
     X = (double *)malloc(sizeof(double) * la);
 
     // TODO : you have to implement those functions
+    // DONE
     set_grid_points_1D(X, &la);
     set_dense_RHS_DBC_1D(RHS, &la, &T0, &T1);
     set_analytical_solution_DBC_1D(EX_SOL, X, &la, &T0, &T1);
@@ -52,9 +54,9 @@ int main(int argc, char *argv[])
     AB = (double *)malloc(sizeof(double) * lab * la);
 
     set_GB_operator_colMajor_poisson1D(AB, &lab, &la, &kv);
-
-    // write_GB_operator_colMajor_poisson1D(AB, &lab, &la, "AB.dat");
-
+    
+    write_GB_operator_colMajor_poisson1D(AB, &lab, &la, "AB.dat");
+    
     printf("Solution with LAPACK\n");
     /* LU Factorization */
     info = 0;
@@ -68,7 +70,12 @@ int main(int argc, char *argv[])
 
     /* Solution (Triangular) */
     if (info == 0) {
-        dgbtrs_("N", &la, &kl, &ku, &NRHS, AB, &lab, ipiv, RHS, &la, &info);
+        dgbtrs_("N", &la, &kl, &ku, &NRHS, AB, &lab, ipiv, RHS, &la, &info
+        #ifdef LAPACK_FORTRAN_STRLEN_END
+            ,678
+        #endif
+        );
+
         if (info != 0) {
             printf("\n INFO DGBTRS = %d\n", info);
         }
