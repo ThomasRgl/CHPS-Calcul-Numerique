@@ -61,18 +61,19 @@ int main(int argc, char *argv[])
     /* LU Factorization */
     info = 0;
     ipiv = (int *)calloc(la, sizeof(int));
-    dgbtrf_(&la, &la, &kl, &ku, AB, &lab, ipiv, &info);
+    // dgbtrf_(&la, &la, &kl, &ku, AB, &lab, ipiv, &info);
 
     /* LU for tridiagonal matrix  (can replace dgbtrf_) */
-    // ierr = dgbtrftridiag(&la, &la, &kl, &ku, AB, &lab, ipiv, &info);
+    // DONE
+    ierr = dgbtrftridiag(&la, &la, &kl, &ku, AB, &lab, ipiv, &info);
 
-    // write_GB_operator_colMajor_poisson1D(AB, &lab, &la, "data/LU.dat");
+    write_GB_operator_colMajor_poisson1D(AB, &lab, &la, "data/LU.dat");
 
     /* Solution (Triangular) */
-    if (info == 0) {
+    if (info == 99) {
         dgbtrs_("N", &la, &kl, &ku, &NRHS, AB, &lab, ipiv, RHS, &la, &info
         #ifdef LAPACK_FORTRAN_STRLEN_END
-            ,678
+            ,0xdeadbeef
         #endif
         );
 
@@ -85,6 +86,8 @@ int main(int argc, char *argv[])
 
     /* It can also be solved with dgbsv */
     // TODO : use dgbsv
+    // DONE
+    //dgbsv_(&la, &ku, &kl, &NRHS, AB, &lab, ipiv, RHS, &la, &info);
 
     write_xy(RHS, X, &la, "data/SOL.dat");
 
