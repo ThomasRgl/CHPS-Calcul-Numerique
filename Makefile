@@ -44,7 +44,8 @@ OBJTP2ITER= lib_poisson1D.o tp_poisson1D_iter.o
 OBJTP2DIRECT= lib_poisson1D.o tp_poisson1D_direct.o
 #
 
-all: bin/tp_testenv bin/tpPoisson1D_iter bin/tpPoisson1D_direct
+# all: bin/tp_testenv bin/tpPoisson1D_iter bin/tpPoisson1D_direct
+all: bin/tp_testenv bin/tpPoisson1D_direct
 
 testenv: bin/tp_testenv
 
@@ -82,5 +83,8 @@ run_tpPoisson1D_iter:
 run_tpPoisson1D_direct:
 	bin/tpPoisson1D_direct
 
+soft_clean:
+	rm -f *.o 
+
 clean:
-	rm *.o bin/*
+	rm -f *.o bin/* data/* img/*

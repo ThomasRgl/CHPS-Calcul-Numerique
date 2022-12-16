@@ -42,9 +42,9 @@ int main(int argc, char *argv[])
     set_dense_RHS_DBC_1D(RHS, &la, &T0, &T1);
     set_analytical_solution_DBC_1D(EX_SOL, X, &la, &T0, &T1);
 
-    write_vec(RHS, &la, "RHS.dat");
-    write_vec(EX_SOL, &la, "EX_SOL.dat");
-    write_vec(X, &la, "X_grid.dat");
+    write_vec(RHS, &la, "data/RHS.dat");
+    write_vec(EX_SOL, &la, "data/EX_SOL.dat");
+    write_vec(X, &la, "data/X_grid.dat");
 
     kv = 1;
     ku = 1;
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 
     set_GB_operator_colMajor_poisson1D(AB, &lab, &la, &kv);
     
-    write_GB_operator_colMajor_poisson1D(AB, &lab, &la, "AB.dat");
+    write_GB_operator_colMajor_poisson1D(AB, &lab, &la, "data/AB.dat");
     
     printf("Solution with LAPACK\n");
     /* LU Factorization */
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
     /* LU for tridiagonal matrix  (can replace dgbtrf_) */
     // ierr = dgbtrftridiag(&la, &la, &kl, &ku, AB, &lab, ipiv, &info);
 
-    // write_GB_operator_colMajor_poisson1D(AB, &lab, &la, "LU.dat");
+    // write_GB_operator_colMajor_poisson1D(AB, &lab, &la, "data/LU.dat");
 
     /* Solution (Triangular) */
     if (info == 0) {
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
     /* It can also be solved with dgbsv */
     // TODO : use dgbsv
 
-    write_xy(RHS, X, &la, "SOL.dat");
+    write_xy(RHS, X, &la, "data/SOL.dat");
 
     /* Relative forward error */
     // TODO : Compute relative norm of the residual
