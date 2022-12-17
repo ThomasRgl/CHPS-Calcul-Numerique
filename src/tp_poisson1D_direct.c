@@ -6,7 +6,10 @@
 #include "atlas_headers.h"
 #include "lib_poisson1D.h"
 #include <cblas.h>
+#include <cblas_f77.h>
 #include <lapack.h>
+#include <lapacke.h>
+#include <stdlib.h>
 
 int main(int argc, char *argv[])
 /* ** argc: Nombre d'arguments */
@@ -20,7 +23,7 @@ int main(int argc, char *argv[])
     int info;
     int NRHS;
     double T0, T1;
-    double *RHS, *EX_SOL, *X;
+    double *RHS, *EX_SOL, *X, *RES;
     double **AAB;
     double *AB;
 
@@ -35,6 +38,7 @@ int main(int argc, char *argv[])
     printf("--------- Poisson 1D ---------\n\n");
     RHS = (double *)malloc(sizeof(double) * la);
     EX_SOL = (double *)malloc(sizeof(double) * la);
+    RES = (double *)calloc(la, sizeof(double));
     X = (double *)malloc(sizeof(double) * la);
 
     // TODO : you have to implement those functions
@@ -55,7 +59,29 @@ int main(int argc, char *argv[])
     AB = (double *)malloc(sizeof(double) * lab * la);
 
     set_GB_operator_colMajor_poisson1D(AB, &lab, &la, &kv);
+    // cblas_dgbmv( CblasColMajor, CblasNoTrans, la, la, kl, ku, 1, AB, lab, EX_SOL, 1, 0, RES, 1);
+
+    // dgbmv();
+    // dgbmv_(char *, const int32_t *, const int32_t *, const int32_t *, const int32_t *, const double *, const double *, const int32_t *, const double *, const int32_t *, const double *, double *, const int32_t *, size_t)
     
+    double alpha = 1;
+    double beta = 0;
+    const int32_t incx = 1;
+    const int32_t incy = 1;
+
+
+    dgbmv_("T", &la, &la, &kl, &ku, &alpha , AB+1, &lab, EX_SOL, &incx, &beta, RES, &incy 
+    #ifdef LAPACK_FORTRAN_STRLEN_END
+            ,0xdeadbeef
+    #endif
+    );
+
+    // dgbmv_(N, la, kl, ku, const int32_t *, const double *, const double *, const int32_t *, const double *, const int32_t *, const double *, double *, const int32_t *, size_t)
+
+    // dgbmv_("N", M, N, kl, ku, alpha, A, lda, x, incx, beta, y, incy, size_t)       
+    // test_Poisson1D_dgbmv(&la , &kl, &ku, &lab, AB, EX_SOL, RES );
+
+    write_vec(RES, &la, "data/AxB.dat");
     write_GB_operator_colMajor_poisson1D(AB, &lab, &la, "data/AB.dat");
     
     printf("Solution with LAPACK\n");
@@ -110,6 +136,7 @@ int main(int argc, char *argv[])
     printf("\nThe relative forward error is relres = %e\n", relres);
 
     free(RHS);
+    free(RES);
     free(EX_SOL);
     free(X);
     free(AB);

@@ -146,20 +146,20 @@ int indexABCol(int i, int j, int *lab) { return 0; }
 // kl, ku, n, info -> USELESS ?
 int dgbtrftridiag(int *la, int *n, int *kl, int *ku, double *AB, int *lab,
                   int *ipiv, int *info) {
-
+    int kv = 1;
     double fact = 0.0f;
     for(int i = 1; i < *la ; i++){
         ipiv[i-1] = i; // ne pas oublier de set ipiv ! 
 
         // fact = bi / di
-        fact = AB[ (*kl) + ( (*lab) * (i-1) ) + 2 ]  //b(i-1)
-             / AB[ (*kl) + ( (*lab) * (i-1) ) + 1 ]; //a(i-1)
+        fact = AB[ (kv) + ( (*lab) * (i-1) ) + 2 ]  //b(i-1)
+             / AB[ (kv) + ( (*lab) * (i-1) ) + 1 ]; //a(i-1)
 
-        AB[ (*kl) + ( (i-1) * (*lab)) + 2 ] = fact; // b(i-1) = fact
+        AB[ (kv) + ( (i-1) * (*lab)) + 2 ] = fact; // b(i-1) = fact
 
-        AB[ (*kl) + ( i * (*lab)) + 1 ] =  // a(i) = a(i) - fact * c(i-1) -> c(i) is located at the i th  row of AB
-            AB[ (*kl) + ( i * (*lab)) + 1 ] - 
-            fact * AB[ (*kl) + ( i * (*lab)) + 0 ];
+        AB[ (kv) + ( i * (*lab)) + 1 ] =  // a(i) = a(i) - fact * c(i-1) -> c(i) is located at the i th  row of AB
+            AB[ (kv) + ( i * (*lab)) + 1 ] - 
+            fact * AB[ (kv) + ( i * (*lab)) + 0 ];
     }
     *info=0; 
     return *info;
