@@ -5,6 +5,7 @@
 /******************************************/
 #include "atlas_headers.h"
 #include "lib_poisson1D.h"
+#include <cblas.h>
 #include <lapack.h>
 
 int main(int argc, char *argv[])
@@ -70,7 +71,7 @@ int main(int argc, char *argv[])
     write_GB_operator_colMajor_poisson1D(AB, &lab, &la, "data/LU.dat");
 
     /* Solution (Triangular) */
-    if (info == 99) {
+    if (info == 0) {
         dgbtrs_("N", &la, &kl, &ku, &NRHS, AB, &lab, ipiv, RHS, &la, &info
         #ifdef LAPACK_FORTRAN_STRLEN_END
             ,0xdeadbeef
@@ -93,6 +94,18 @@ int main(int argc, char *argv[])
 
     /* Relative forward error */
     // TODO : Compute relative norm of the residual
+    // DONE
+    // || x - xex || / || xex ||
+    // || RHS - EX_SOL || / || EX_SOL ||
+    double norm_EX_SOL = cblas_dnrm2(la, EX_SOL, 1 );
+
+    // using daxpy for RHS = -1 * EX_SOL + RHS
+    cblas_daxpy(la, -1, EX_SOL, 1, RHS, 1);
+    write_vec(RHS, &la, "data/DIFF.dat");
+    double norm_absolute = cblas_dnrm2(la, RHS, 1 );
+    relres = norm_absolute / norm_EX_SOL;
+
+
 
     printf("\nThe relative forward error is relres = %e\n", relres);
 
