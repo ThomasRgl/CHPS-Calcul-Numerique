@@ -13,6 +13,6 @@ make all
 bin/mybench 12 10
 #
 # gnuplot plot.gp
-gnuplot iter.gp
+gnuplot direct.gp
 #
 make soft_clean

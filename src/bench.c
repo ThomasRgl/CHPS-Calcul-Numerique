@@ -82,7 +82,6 @@ void run_benchmark(const char *title,
     //
     NRHS = 1;
     la = base * pow(2,p);
-    printf("la : %d\n", la);
     T0 = -5.0;
     T1 = 5.0;
 
@@ -141,7 +140,7 @@ void run_benchmark(const char *title,
 
                 clock_gettime(CLOCK_MONOTONIC_RAW, &t2);
 
-                elapsed = (f64)(t2.tv_nsec - t1.tv_nsec) / (f64)r;
+                elapsed = (f64)(t2.tv_nsec - t1.tv_nsec) / (f64)1;//r;
             } while (elapsed <= 0.0);
 
             samples[i] = elapsed;
@@ -163,9 +162,9 @@ void run_benchmark(const char *title,
         fprintf(fp,"%10s; %15.3lf; %15.3lf; %15.3lf; %10llu; %10llu; %15.3lf; %15.3lf; "
                "%15.3lf; %15.3lf (%6.3lf %%); %10.3lf; %10s\n",
                title,
-               3 * size_kib, // 3 matices
-               3 * size_mib, // 3 matrices
-               3 * size_gib, // 3 matrices
+               size_kib,
+               size_mib, 
+               size_gib, 
                n, r, min, max, mean, dev, (dev * 100.0 / mean), mbps, title);
         }
         
