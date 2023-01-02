@@ -34,6 +34,8 @@ LIBS=${LIBSLOCAL}
 INCLATLAS=${INCLUDEBLASLOCAL}
 INCL= -I $(TPDIR)/include $(INCLATLAS)
 
+OFLAGS= -O2 -march=native -mtune=native
+
 #
 #################################################################
 # makefile
@@ -42,16 +44,19 @@ INCL= -I $(TPDIR)/include $(INCLATLAS)
 OBJENV= tp_env.o
 OBJTP2ITER= lib_poisson1D.o tp_poisson1D_iter.o
 OBJTP2DIRECT= lib_poisson1D.o tp_poisson1D_direct.o
+OBJ_BENCH= lib_poisson1D.o kernel.o tools.o bench.o
 #
 
 # all: bin/tp_testenv bin/tpPoisson1D_iter bin/tpPoisson1D_direct
-all: bin/tp_testenv bin/tpPoisson1D_direct
+all: bin/tp_testenv bin/tpPoisson1D_direct bin/mybench
 
 testenv: bin/tp_testenv
 
 tpPoisson1D_iter: bin/tpPoisson1D_iter
 
 tpPoisson1D_direct: bin/tpPoisson1D_direct
+
+mybench: bin/mybench
 
 tp_env.o: $(TPDIRSRC)/tp_env.c
 	$(CC) $(OPTC) -c $(INCL) $(TPDIRSRC)/tp_env.c 
@@ -65,6 +70,18 @@ tp_poisson1D_iter.o: $(TPDIRSRC)/tp_poisson1D_iter.c
 tp_poisson1D_direct.o: $(TPDIRSRC)/tp_poisson1D_direct.c
 	$(CC) $(OPTC) -c $(INCL) $(TPDIRSRC)/tp_poisson1D_direct.c  
 
+kernel.o: $(TPDIRSRC)/kernel.c
+	$(CC) $(OPTC) $(OFLAGS) -c $(INCL) $(TPDIRSRC)/kernel.c  
+
+tools.o: $(TPDIRSRC)/tools.c
+	$(CC) $(OPTC) -c $(INCL) $(TPDIRSRC)/tools.c  
+
+bench.o: $(TPDIRSRC)/bench.c
+	$(CC) $(OPTC) -c $(INCL) $(TPDIRSRC)/bench.c  
+
+
+
+
 bin/tp_testenv: $(OBJENV) 
 	$(CC) -o bin/tp_testenv $(OPTC) $(OBJENV) $(LIBS)
 
@@ -73,6 +90,10 @@ bin/tpPoisson1D_iter: $(OBJTP2ITER)
 
 bin/tpPoisson1D_direct: $(OBJTP2DIRECT)
 	$(CC) -o bin/tpPoisson1D_direct $(OPTC) $(OBJTP2DIRECT) $(LIBS)
+
+bin/mybench: $(OBJ_BENCH)
+	$(CC) -o bin/mybench $(OPTC) $(OBJ_BENCH) $(LIBS)
+
 
 run_testenv:
 	bin/tp_testenv

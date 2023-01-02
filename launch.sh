@@ -3,13 +3,16 @@
 mkdir -p img
 mkdir -p data
 
+# make mybench
 make all
 
 #make run_testenv
-make run_tpPoisson1D_direct
+#make run_tpPoisson1D_direct
 #make run_tpPoisson1D_iter
 
-#gnuplot direct.plot
-#gnuplot iter.plot
-
+bin/mybench 12 10
+#
+# gnuplot plot.gp
+gnuplot iter.gp
+#
 make soft_clean

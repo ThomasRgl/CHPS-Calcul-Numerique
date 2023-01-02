@@ -66,41 +66,44 @@ int main(int argc, char *argv[])
     
     double alpha = 1;
     double beta = 0;
+    int ld = 4;
     const int32_t incx = 1;
     const int32_t incy = 1;
 
-
-    dgbmv_("T", &la, &la, &kl, &ku, &alpha , AB+1, &lab, EX_SOL, &incx, &beta, RES, &incy 
-    #ifdef LAPACK_FORTRAN_STRLEN_END
-            ,0xdeadbeef
-    #endif
-    );
+    cblas_dgbmv( CblasColMajor, CblasTrans, la, la, kl, ku, 1, AB+1, lab, EX_SOL, 1, 0, RHS, 1);
+    //
+    // dgbmv_("T", &la, &la, &kl, &ku, &alpha , AB+kv, &ld, EX_SOL, &incx, &beta, RES, &incy 
+    // #ifdef LAPACK_FORTRAN_STRLEN_END
+    //         ,0xdeadbeef
+    // #endif
+    // );
 
     // dgbmv_(N, la, kl, ku, const int32_t *, const double *, const double *, const int32_t *, const double *, const int32_t *, const double *, double *, const int32_t *, size_t)
 
     // dgbmv_("N", M, N, kl, ku, alpha, A, lda, x, incx, beta, y, incy, size_t)       
     // test_Poisson1D_dgbmv(&la , &kl, &ku, &lab, AB, EX_SOL, RES );
 
-    write_vec(RES, &la, "data/AxB.dat");
+    write_vec(RHS, &la, "data/AxB.dat");
     write_GB_operator_colMajor_poisson1D(AB, &lab, &la, "data/AB.dat");
     
     printf("Solution with LAPACK\n");
     /* LU Factorization */
     info = 0;
     ipiv = (int *)calloc(la, sizeof(int));
-    // dgbtrf_(&la, &la, &kl, &ku, AB, &lab, ipiv, &info);
+    dgbtrf_(&la, &la, &kl, &ku, AB, &lab, ipiv, &info);
 
     /* LU for tridiagonal matrix  (can replace dgbtrf_) */
     // DONE
-    ierr = dgbtrftridiag(&la, &la, &kl, &ku, AB, &lab, ipiv, &info);
+    //ierr = dgbtrftridiag(&la, &la, &kl, &ku, AB, &lab, ipiv, &info);
 
     write_GB_operator_colMajor_poisson1D(AB, &lab, &la, "data/LU.dat");
 
     /* Solution (Triangular) */
     if (info == 0) {
+        // https://github.com/Reference-LAPACK/lapack/issues/512
         dgbtrs_("N", &la, &kl, &ku, &NRHS, AB, &lab, ipiv, RHS, &la, &info
         #ifdef LAPACK_FORTRAN_STRLEN_END
-            ,0xdeadbeef
+            ,0
         #endif
         );
 
