@@ -2,6 +2,8 @@
 
 mkdir -p img
 mkdir -p data
+mkdir -p bin
+mkdir -p build
 
 rm data/*.dat
 
