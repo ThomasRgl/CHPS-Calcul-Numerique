@@ -4,6 +4,7 @@
 /* Poisson problem (Heat equation)            */
 /**********************************************/
 #include "lib_poisson1D.h"
+#include <cblas.h>
 
 void set_GB_operator_colMajor_poisson1D(double *AB, int *lab, int *la,
                                         int *kv) {
@@ -24,10 +25,29 @@ void set_GB_operator_colMajor_poisson1D(double *AB, int *lab, int *la,
     AB[ *kv ] = 0;
     AB[ (*lab) * (*la) - 1 ] = 0;
 
+
+    // AB[ 0 ] = 0;
+    // AB[ (*lab) * (*la) - 2 ] = 0;
+
+
 }
 
-void set_GB_operator_colMajor_poisson1D_Id(double *AB, int *lab, int *la,
-                                           int *kv) {}
+void set_GB_operator_colMajor_poisson1D_Id(double* AB, int *lab, int *la, int *kv){
+  int ii, jj, kk;
+  for (jj=0;jj<(*la);jj++){
+    kk = jj*(*lab);
+    if (*kv>=0){
+      for (ii=0;ii< *kv;ii++){
+	AB[kk+ii]=0.0;
+      }
+    }
+    AB[kk+ *kv]=0.0;
+    AB[kk+ *kv+1]=1.0;
+    AB[kk+ *kv+2]=0.0;
+  }
+  AB[1]=0.0;
+  AB[(*lab)*(*la)-1]=0.0;
+}
 
 void set_dense_RHS_DBC_1D(double *RHS, int *la, double *BC0, double *BC1) {
     
@@ -141,7 +161,9 @@ void write_xy(double *vec, double *x, int *la, char *filename) {
     }
 }
 
-int indexABCol(int i, int j, int *lab) { return 0; }
+int indexABCol(int i, int j, int *lab) { 
+    return j*(*lab)+i;
+}
 
 // kl, ku, n, info -> USELESS ?
 int dgbtrftridiag(int *la, int *n, int *kl, int *ku, double *AB, int *lab,
@@ -164,3 +186,7 @@ int dgbtrftridiag(int *la, int *n, int *kl, int *ku, double *AB, int *lab,
     *info=0; 
     return *info;
 }
+
+
+
+

@@ -42,14 +42,21 @@ OFLAGS= -O2 -march=native -mtune=native
 ############
 #
 OBJENV= tp_env.o
-OBJTP2ITER= lib_poisson1D.o tp_poisson1D_iter.o
+OBJTP2ITER= lib_poisson1D.o lib_iter_poisson1D.o tp_poisson1D_iter.o
 OBJTP2DIRECT= lib_poisson1D.o tp_poisson1D_direct.o
-OBJ_BENCH= lib_poisson1D.o kernel.o tools.o bench.o
+
+OBJ_DIRECT_BENCH= lib_poisson1D.o kernel.o tools.o bench.o
 OBJ_DIRECT_ERR_BENCH= lib_poisson1D.o kernel.o tools.o direct_err_bench.o
+
+# OBJ_ITER_BENCH= lib_poisson1D.o lib_iter_poisson1D.o kernel.o tools.o bench.o
+# OBJ_ITER_ERR_BENCH= lib_poisson1D.o kernel.o tools.o direct_err_bench.o
+#
 #
 
 # all: bin/tp_testenv bin/tpPoisson1D_iter bin/tpPoisson1D_direct
-all: bin/tp_testenv bin/tpPoisson1D_direct bin/mybench bin/direct_err_bench
+all: bin/tp_testenv bin/tpPoisson1D_direct bin/mybench bin/direct_err_bench bin/tpPoisson1D_iter
+
+####################################################################
 
 testenv: bin/tp_testenv
 
@@ -61,11 +68,17 @@ mybench: bin/mybench
 
 direct_err_bench: bin/direct_err_bench
 
+#####################################################################
+
 tp_env.o: $(TPDIRSRC)/tp_env.c
 	$(CC) $(OPTC) -c $(INCL) $(TPDIRSRC)/tp_env.c 
 
 lib_poisson1D.o: $(TPDIRSRC)/lib_poisson1D.c
 	$(CC) $(OPTC) -c $(INCL) $(TPDIRSRC)/lib_poisson1D.c 
+
+lib_iter_poisson1D.o: $(TPDIRSRC)/lib_iter_poisson1D.c
+	$(CC) $(OPTC) -c $(INCL) $(TPDIRSRC)/lib_iter_poisson1D.c 
+
 
 tp_poisson1D_iter.o: $(TPDIRSRC)/tp_poisson1D_iter.c
 	$(CC) $(OPTC) -c $(INCL) $(TPDIRSRC)/tp_poisson1D_iter.c  
@@ -87,6 +100,7 @@ direct_err_bench.o: $(TPDIRSRC)/direct_err_bench.c
 
 
 
+#####################################################################
 
 
 
@@ -99,12 +113,13 @@ bin/tpPoisson1D_iter: $(OBJTP2ITER)
 bin/tpPoisson1D_direct: $(OBJTP2DIRECT)
 	$(CC) -o bin/tpPoisson1D_direct $(OPTC) $(OBJTP2DIRECT) $(LIBS)
 
-bin/mybench: $(OBJ_BENCH)
-	$(CC) -o bin/mybench $(OPTC) $(OBJ_BENCH) $(LIBS)
+bin/mybench: $(OBJ_DIRECT_BENCH)
+	$(CC) -o bin/mybench $(OPTC) $(OBJ_DIRECT_BENCH) $(LIBS)
 
 bin/direct_err_bench: $(OBJ_DIRECT_ERR_BENCH)
 	$(CC) -o bin/direct_err_bench $(OPTC) $(OBJ_DIRECT_ERR_BENCH) $(LIBS)
 
+#####################################################################
 
 
 run_testenv:
