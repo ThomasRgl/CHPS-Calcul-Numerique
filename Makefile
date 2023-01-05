@@ -45,10 +45,11 @@ OBJENV= tp_env.o
 OBJTP2ITER= lib_poisson1D.o tp_poisson1D_iter.o
 OBJTP2DIRECT= lib_poisson1D.o tp_poisson1D_direct.o
 OBJ_BENCH= lib_poisson1D.o kernel.o tools.o bench.o
+OBJ_DIRECT_ERR_BENCH= lib_poisson1D.o kernel.o tools.o direct_err_bench.o
 #
 
 # all: bin/tp_testenv bin/tpPoisson1D_iter bin/tpPoisson1D_direct
-all: bin/tp_testenv bin/tpPoisson1D_direct bin/mybench
+all: bin/tp_testenv bin/tpPoisson1D_direct bin/mybench bin/direct_err_bench
 
 testenv: bin/tp_testenv
 
@@ -57,6 +58,8 @@ tpPoisson1D_iter: bin/tpPoisson1D_iter
 tpPoisson1D_direct: bin/tpPoisson1D_direct
 
 mybench: bin/mybench
+
+direct_err_bench: bin/direct_err_bench
 
 tp_env.o: $(TPDIRSRC)/tp_env.c
 	$(CC) $(OPTC) -c $(INCL) $(TPDIRSRC)/tp_env.c 
@@ -79,6 +82,11 @@ tools.o: $(TPDIRSRC)/tools.c
 bench.o: $(TPDIRSRC)/bench.c
 	$(CC) $(OPTC) -c $(INCL) $(TPDIRSRC)/bench.c  
 
+direct_err_bench.o: $(TPDIRSRC)/direct_err_bench.c
+	$(CC) $(OPTC) -c $(INCL) $(TPDIRSRC)/direct_err_bench.c  
+
+
+
 
 
 
@@ -93,6 +101,10 @@ bin/tpPoisson1D_direct: $(OBJTP2DIRECT)
 
 bin/mybench: $(OBJ_BENCH)
 	$(CC) -o bin/mybench $(OPTC) $(OBJ_BENCH) $(LIBS)
+
+bin/direct_err_bench: $(OBJ_DIRECT_ERR_BENCH)
+	$(CC) -o bin/direct_err_bench $(OPTC) $(OBJ_DIRECT_ERR_BENCH) $(LIBS)
+
 
 
 run_testenv:
