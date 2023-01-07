@@ -146,6 +146,21 @@ void write_vec(double *vec, int *la, char *filename) {
     }
 }
 
+void write_i_vec(double *vec, int *la, char *filename) {
+    int jj;
+    FILE *file;
+    file = fopen(filename, "w");
+    // Numbering from 1 to la
+    if (file != NULL) {
+        for (jj = 0; jj < (*la); jj++) {
+            fprintf(file, "%d; %lf\n", jj, vec[jj]);
+        }
+        fclose(file);
+    } else {
+        perror(filename);
+    }
+}
+
 void write_xy(double *vec, double *x, int *la, char *filename) {
     int jj;
     FILE *file;

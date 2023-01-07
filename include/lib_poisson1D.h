@@ -19,6 +19,7 @@ void write_GB_operator_rowMajor_poisson1D(double* AB, int* lab, int *la, char* f
 void write_GB_operator_colMajor_poisson1D(double* AB, int* lab, int* la, char* filename);
 void write_vec(double* vec, int* la, char* filename);
 void write_xy(double* vec, double* x, int* la, char* filename);
+void write_i_vec(double *vec, int *la, char *filename);
 
 void eig_poisson1D(double* eigval, int *la);
 double eigmax_poisson1D(int *la);

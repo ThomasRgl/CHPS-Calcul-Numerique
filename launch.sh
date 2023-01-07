@@ -22,7 +22,7 @@ make run_tpPoisson1D_iter
 
 #
 # gnuplot direct.gp
-# gnuplot iter.gp
+gnuplot iter.gp
 
 
 #
