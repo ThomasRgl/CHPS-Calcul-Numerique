@@ -15,7 +15,7 @@ set xlabel "it"
 
 
 set logscale x 2
-set logscale y 2
+#set logscale y 2
 
 
 set xtic rotate by -45 scale 0 
@@ -34,8 +34,8 @@ set terminal "png" size 800,400
 set output img1
 
 
-plot "data/RA_RES.dat" using 1:2 w lp title "richardson alpha"
-#     "data/DGBTRF-S.dat" using 5:9 w lp t "dgbtrf + dgbtrs",\
-#     "data/MANUEL.dat" using 5:9 w lp t "dtbrftridiag + dgbtrs"
+plot "data/RA_RES.dat" using 1:2 w lp title "richardson alpha",\
+     "data/JACOBI_ERR.dat" using 1:2 w lp t "jacobi",\
+     "data/GAUSS_ERR.dat" using 1:2 w lp t "gauss seidel"
 
 
