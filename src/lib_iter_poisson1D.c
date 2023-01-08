@@ -38,7 +38,6 @@ void richardson_alpha(double *AA, double *RHS, double *X, double *alpha_rich,
     double * TMP = (double *)calloc(*la, sizeof(double));
 
     int it = 0;
-    printf("alpha : %lf\n", *alpha_rich);
 
     // norm(b - A*x)/norm(b);
     // TMP = b - Ax
@@ -82,15 +81,15 @@ void richardson_alpha(double *AA, double *RHS, double *X, double *alpha_rich,
 void extract_MB_jacobi_tridiag(double *AB, double *MB, int *lab, int *la,
                                int *ku, int *kl, int *kv) {
     u64 lda = *lab;
-    u64 ldb = *ku + *kv + *kl + 1;
+    // u64 ldb = *ku + *kv + *kl + 1;
 
     for(u64 i = 0; i < *la; i++){
-        for(u64 j = 0; j < *kv ; j++ )
-            MB[i * ldb + j] = 0;
+        // for(u64 j = 0; j < *kv ; j++ )
+            // MB[i * ldb + j] = 0;
         
-        MB[i * ldb + *kv + 0] = 0;
-        MB[i * ldb + *kv + 1] = AB[ i * lda + 1];
-        MB[i * ldb + *kv + 2] = 0;
+        MB[i * (*lab)  + 0] = 0;
+        MB[i * (*lab)  + 1] = AB[ i * lda + 1];
+        MB[i * (*lab)  + 2] = 0;
 
 
 
@@ -100,17 +99,17 @@ void extract_MB_jacobi_tridiag(double *AB, double *MB, int *lab, int *la,
 void extract_MB_gauss_seidel_tridiag(double *AB, double *MB, int *lab, int *la,
                                      int *ku, int *kl, int *kv) {
     
-    u64 lda = *lab;
-    u64 ldb = *ku + *kv + *kl + 1;
+    // u64 lda = *lab;
+    // u64 ldb = *ku + *kv + *kl + 1;
 
     for(u64 i = 0; i < *la; i++){
 
-        for(u64 j = 0; j < *kv ; j++ )
-            MB[i * ldb + j] = 0;
+        // for(u64 j = 0; j < *kv ; j++ )
+            // MB[i * ldb + j] = 0;
         
-        MB[i * ldb + *kv + 0] = 0;
-        MB[i * ldb + *kv + 1] = AB[ i * lda + 1];
-        MB[i * ldb + *kv + 2] = AB[ i * lda + 2];
+        MB[i * (*lab)  + 0] = 0;
+        MB[i * (*lab)  + 1] = AB[ i * (*lab) + 1];
+        MB[i * (*lab)  + 2] = AB[ i * (*lab) + 2];
 
 
     }
@@ -123,27 +122,33 @@ void richardson_MB(double *AB, double *RHS, double *X, double *MB, int *lab,
 
     int NRHS = 1;
     int info = 1;
+    int kub = 0;
     int * ipiv = (int *)calloc(*la, sizeof(int));
-    int ldb = 1 + *ku + *kl + 1;
+    double * LU = (double *)malloc(*la * (*lab) * sizeof(double));
+    // int ldb = 1 + *ku + *kl + 1;
+    cblas_dcopy(*la * *lab, MB, 1, LU, 1);
+    dgbtrf_(la, la, kl, &kub, LU, lab, ipiv, &info); 
 
     int it = 0;
 
     float norm_b = cblas_dnrm2(*la, RHS, 1 );
     float norm_bmAx = 0;
 
-    cblas_dgbmv( CblasColMajor, CblasNoTrans, *la, *la, *kl, *ku, 1, AB, *lab, X, 1, 0, TMP, 1);
+    cblas_dgbmv( CblasColMajor, CblasNoTrans, *la, *la, *kl, *ku, 1, AB, 
+                *lab, X, 1, 0, TMP, 1);
     cblas_daxpy(*la, -1, RHS, 1, TMP, 1);
     norm_bmAx = cblas_dnrm2(*la, TMP, 1 );
     resvec[it] = norm_bmAx/norm_b;
 
     while( pow(resvec[it],2) > pow(*tol,2) && it < *maxit ){
-        // printf("eee\n");
         it ++;
         
-        dgbsv_(la, ku, kl, &NRHS, MB, &ldb, ipiv, TMP, la, &info);
+        dgbtrs_("N", la, kl, &kub, &NRHS, LU, lab, ipiv, TMP, la, &info,1); 
+        // dgbsv_(la, kl, &kub, &NRHS, MB, lab, ipiv, TMP, la, &info);
         cblas_daxpy(*la, -1, TMP, 1, X, 1);
 
-        cblas_dgbmv( CblasColMajor, CblasNoTrans, *la, *la, *kl, *ku, 1, AB, *lab, X, 1, 0, TMP, 1);
+        cblas_dgbmv( CblasColMajor, CblasNoTrans, *la, *la, *kl, *ku, 1, AB
+                    , *lab, X, 1, 0, TMP, 1);
         cblas_daxpy(*la, -1, RHS, 1, TMP, 1);
         norm_bmAx = cblas_dnrm2(*la, TMP, 1 );
         resvec[it] = norm_bmAx/norm_b;

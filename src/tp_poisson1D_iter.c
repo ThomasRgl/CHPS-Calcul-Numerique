@@ -66,11 +66,11 @@ int main(int argc, char *argv[])
     /* Solution (Richardson with optimal alpha) */
 
     /* Computation of optimum alpha */
-    opt_alpha = richardson_alpha_opt(&la) + 0.000;
+    opt_alpha = richardson_alpha_opt(&la) ;
     printf("Optimal alpha for simple Richardson iteration is : %lf", opt_alpha);
 
     /* Solve */
-    double tol = 1e-5;
+    double tol = 1e-3;
     int maxit = 1000;
     double *resvec;
     int nbite = 0;
@@ -87,40 +87,37 @@ int main(int argc, char *argv[])
     /* Richardson General Tridiag */
 
     /* get MB (:=M, D for Jacobi, (D-E) for Gauss-seidel) */
-    kv = 1;
+    kv = 1; // WTF ???????
     ku = 1;
     kl = 1;
-    int ldb = kv + ku + kl +1;
 
-    MB = (double *)malloc(sizeof(double) * (ldb)*la);
+    MB = (double *)malloc(sizeof(double) * (lab)*la);
+
+
 
     for(int i = 0; i < la; i++)
         SOL[i] = 0;
-
     set_dense_RHS_DBC_1D(RHS, &la, &T0, &T1);
     extract_MB_jacobi_tridiag(AB, MB, &lab, &la, &ku, &kl, &kv);
-    // write_GB_operator_colMajor_poisson1D(MB, &ldb, &la, "data/M_Jacobi");
-    
-    /* Solve with General Richardson */
     richardson_MB(AB, RHS, SOL, MB, &lab, &la, &ku, &kl, &tol, &maxit,
     resvec, &nbite);
 
+    write_GB_operator_colMajor_poisson1D(MB, &lab, &la, "data/M_Jacobi");
     write_i_vec(resvec, &nbite, "data/JACOBI_ERR.dat");
-    // write_vec(SOL, &la, "data/SOL.dat");
+    write_vec(SOL, &la, "data/JAC_SOL.dat");
 
 
 
     for(int i = 0; i < la; i++)
         SOL[i] = 0;
-
     set_dense_RHS_DBC_1D(RHS, &la, &T0, &T1);
     extract_MB_gauss_seidel_tridiag(AB, MB, &lab, &la, &ku, &kl, &kv);
-    // write_GB_operator_colMajor_poisson1D(MB, &ldb, &la, "data/M_GaussSeidel");
-    
     richardson_MB(AB, RHS, SOL, MB, &lab, &la, &ku, &kl, &tol, &maxit,
     resvec, &nbite);
 
+    write_GB_operator_colMajor_poisson1D(MB, &lab, &la, "data/M_GaussSeidel");
     write_i_vec(resvec, &nbite, "data/GAUSS_ERR.dat");
+    write_vec(SOL, &la, "data/GAUSS_SOL.dat");
 
 
     free(resvec);

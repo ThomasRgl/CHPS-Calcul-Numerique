@@ -17,7 +17,7 @@ make run_tpPoisson1D_iter
 
 
 #bin/mybench 12 10
-#bin/direct_err_bench 12 10
+#bin/direct_bench_err 12 10
 
 
 #
