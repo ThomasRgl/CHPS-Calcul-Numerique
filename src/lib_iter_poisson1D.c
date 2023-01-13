@@ -33,9 +33,9 @@ double richardson_alpha_opt(int *la) {
 
 void richardson_alpha(double *AA, double *RHS, double *X, double *alpha_rich,
                       int *lab, int *la, int *ku, int *kl, double *tol,
-                      int *maxit, double *resvec, int *nbite) {
+                      int *maxit, double *resvec, int *nbite, double * TMP) {
 
-    double * TMP = (double *)calloc(*la, sizeof(double));
+    // double * TMP = (double *)calloc(*la, sizeof(double));
 
     int it = 0;
 
@@ -71,7 +71,6 @@ void richardson_alpha(double *AA, double *RHS, double *X, double *alpha_rich,
     }
 
     *nbite = it;
-    free(TMP);
 
 
 }
@@ -117,14 +116,13 @@ void extract_MB_gauss_seidel_tridiag(double *AB, double *MB, int *lab, int *la,
 
 void richardson_MB(double *AB, double *RHS, double *X, double *MB, int *lab,
                    int *la, int *ku, int *kl, double *tol, int *maxit,
-                   double *resvec, int *nbite) {
-    double * TMP = (double *)calloc(*la, sizeof(double));
+                   double *resvec, int *nbite, int * ipiv, double * LU, double * TMP ) {
+    // double * TMP = (double *)calloc(*la, sizeof(double));
 
     int NRHS = 1;
     int info = 1;
     int kub = 0;
-    int * ipiv = (int *)calloc(*la, sizeof(int));
-    double * LU = (double *)malloc(*la * (*lab) * sizeof(double));
+
     // int ldb = 1 + *ku + *kl + 1;
     cblas_dcopy(*la * *lab, MB, 1, LU, 1);
     dgbtrf_(la, la, kl, &kub, LU, lab, ipiv, &info); 
@@ -139,7 +137,7 @@ void richardson_MB(double *AB, double *RHS, double *X, double *MB, int *lab,
     cblas_daxpy(*la, -1, RHS, 1, TMP, 1);
     norm_bmAx = cblas_dnrm2(*la, TMP, 1 );
     resvec[it] = norm_bmAx/norm_b;
-
+    // printf("---  %lf %lf \n", norm_bmAx, norm_b);
     while( pow(resvec[it],2) > pow(*tol,2) && it < *maxit ){
         it ++;
         
@@ -155,9 +153,6 @@ void richardson_MB(double *AB, double *RHS, double *X, double *MB, int *lab,
     }
 
     *nbite = it;
-    free(TMP);
-
-
 
 
 }

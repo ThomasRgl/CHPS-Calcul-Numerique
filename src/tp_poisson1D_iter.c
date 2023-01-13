@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 
     /* Size of the problem */
     NRHS = 1;
-    nbpoints = 12;
+    nbpoints = 64;
     la = nbpoints - 2;
 
     /* Dirichlet Boundary conditions */
@@ -76,10 +76,11 @@ int main(int argc, char *argv[])
     int nbite = 0;
 
     resvec = (double *)calloc(maxit, sizeof(double));
+    double * TMP = (double *)calloc(la, sizeof(double));
 
     /* Solve with Richardson alpha */
     richardson_alpha(AB, RHS, SOL, &opt_alpha, &lab, &la, &ku, &kl, &tol,
-                     &maxit, resvec, &nbite);
+                     &maxit, resvec, &nbite, TMP );
 
     write_vec(SOL, &la, "data/RA_SOL.dat");
     write_i_vec(resvec, &nbite, "data/RA_RES.dat");
@@ -92,7 +93,9 @@ int main(int argc, char *argv[])
     kl = 1;
 
     MB = (double *)malloc(sizeof(double) * (lab)*la);
-
+    ipiv = (int *)calloc(la, sizeof(int));
+    double * LU = (double *)malloc(la * lab * sizeof(double));
+ 
 
 
     for(int i = 0; i < la; i++)
@@ -100,7 +103,7 @@ int main(int argc, char *argv[])
     set_dense_RHS_DBC_1D(RHS, &la, &T0, &T1);
     extract_MB_jacobi_tridiag(AB, MB, &lab, &la, &ku, &kl, &kv);
     richardson_MB(AB, RHS, SOL, MB, &lab, &la, &ku, &kl, &tol, &maxit,
-    resvec, &nbite);
+    resvec, &nbite, ipiv, LU, TMP);
 
     write_GB_operator_colMajor_poisson1D(MB, &lab, &la, "data/M_Jacobi");
     write_i_vec(resvec, &nbite, "data/JACOBI_ERR.dat");
@@ -113,7 +116,7 @@ int main(int argc, char *argv[])
     set_dense_RHS_DBC_1D(RHS, &la, &T0, &T1);
     extract_MB_gauss_seidel_tridiag(AB, MB, &lab, &la, &ku, &kl, &kv);
     richardson_MB(AB, RHS, SOL, MB, &lab, &la, &ku, &kl, &tol, &maxit,
-    resvec, &nbite);
+    resvec, &nbite, ipiv, LU, TMP);
 
     write_GB_operator_colMajor_poisson1D(MB, &lab, &la, "data/M_GaussSeidel");
     write_i_vec(resvec, &nbite, "data/GAUSS_ERR.dat");

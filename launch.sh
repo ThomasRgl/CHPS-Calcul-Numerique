@@ -13,11 +13,16 @@ make -B all
 
 #make run_testenv
 #make run_tpPoisson1D_direct
-make run_tpPoisson1D_iter
+# make run_tpPoisson1D_iter
 
 
 #bin/mybench 12 10
-#bin/direct_bench_err 12 10
+# bin/bench_direct_err 12 10
+
+./bin/bench_iter_conv
+bin/bench_iter_err 10 10
+bin/bench_iter_ite 5 10
+bin/bench_iter 10 10
 
 
 #
