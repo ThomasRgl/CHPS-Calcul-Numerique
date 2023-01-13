@@ -89,9 +89,10 @@ void run_benchmark(const char *title,
     lab = kv + kl + ku + 1;
 
     double tol = 1e-3;
-    int maxit = 1000;
+    int maxit = 100000;
     int nbite = 0;
-
+    
+    printf("%llu %d\n", p, la);
 
 
     //////////////////////////////////////////////////////////
@@ -128,9 +129,10 @@ void run_benchmark(const char *title,
         kernel( AB, RHS, ipiv, NRHS, laa, ku, kl, lab, maxit, resvec, 
             TMP, &nbite, SOL, MB, tol, LU );
         // printf("%d %d\n", laa, nbite);
-        if(nbite >= 1000)
+        if(nbite >= maxit)
             goto sortie;
         fprintf(fp,"%d; %d\n", laa, nbite );
+        // printf("%d; %d\n", laa, nbite );
         }
     }
 

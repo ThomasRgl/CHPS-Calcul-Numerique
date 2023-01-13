@@ -11,23 +11,28 @@ rm data/*.dat
 make -B all
 
 
-#make run_testenv
-#make run_tpPoisson1D_direct
-# make run_tpPoisson1D_iter
 
+##########  COMMENT OR UNCOMMENT THIS PART #########
 
-#bin/mybench 12 10
-# bin/bench_direct_err 12 10
+make run_testenv
+make run_tpPoisson1D_direct
+make run_tpPoisson1D_iter
 
+# create benchmark data for direct methods
+bin/bench_direct 12 10
+bin/bench_direct_err 12 10
+
+#create benchmark data for iterative methods
 ./bin/bench_iter_conv
 bin/bench_iter_err 10 10
-bin/bench_iter_ite 5 10
+bin/bench_iter_ite 8 10
 bin/bench_iter 10 10
 
+####################################################
 
 #
-# gnuplot direct.gp
-gnuplot iter.gp
+#gnuplot direct.gp
+#gnuplot iter.gp
 
 
 #

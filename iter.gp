@@ -44,7 +44,7 @@ plot "data/RA_ERR.dat" using 1:2 w lp title "richardson alpha",\
 
 img1 = "img/iter__ITE.png"
 # title1 = " erreur des méthodes itératives au cours de leur apprentissage" 
-title1 = " erreur après 10 itérations"
+title1 = " erreur après 100 itérations de méthodes itératives"
 # convergence ?
 
 set key top left 
@@ -80,6 +80,8 @@ set title title1
 set ylabel " iteration "
 set xlabel " taille de la matrice " 
 
+unset logscale x
+unset logscale y
 
 ##
 set terminal "png" size 800,400
@@ -93,14 +95,14 @@ plot "data/RA_SC.dat" using 1:2 w lp title "richardson alpha",\
 ############################################
 
 img1 = "img/speediter.png"
-title1 = "comparaison des temps d'executions des différentes \n méthodes de de résolution de l'equation de la chaleur"
+title1 = "comparaison du temps pour effectuer 100 itérations "
 
 set ylabel "time (ns)"
 set xlabel "taille de la matrice (la) " 
 
 
-set logscale x 2
-set logscale y 2
+unset logscale x 
+unset logscale y 
 
 
 set key top left 

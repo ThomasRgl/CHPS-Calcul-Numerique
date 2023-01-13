@@ -93,7 +93,7 @@ void run_benchmark(const char *title,
     lab = kv + kl + ku + 1;
 
     double tol = 1e-10;
-    int maxit = 10;
+    int maxit = 100;
     int nbite = 0;
 
 
